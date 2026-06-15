@@ -16,7 +16,23 @@ You can place an order immediately after uploading the files (usually only takes
 
 ### Manual installation
 
-Download the latest ZIP from this repository, then open the "Plugin and Content Manager" from the KiCad main window and install the ZIP file via "Install from File".
+Download the latest release ZIP from [GitHub Releases](https://github.com/Aivon-PCBA/Aivon-Plug-in-for-Kicad/releases), or build it locally:
+
+```bash
+python scripts/package_addon.py
+```
+
+Then open the "Plugin and Content Manager" from the KiCad main window and install `KiCadToAivon_v<version>.zip` via "Install from File".
+
+### Release
+
+Releases follow the same layout as [PCBWay Plug-in for KiCad](https://github.com/pcbway/PCBWay-Plug-in-for-Kicad/releases):
+
+1. Update `metadata.json` version
+2. Commit and push
+3. Create and push a tag, for example `v1.0.0`
+4. GitHub Actions builds `KiCadToAivon_v<version>.zip` and publishes the release asset
+5. Submit `dist/metadata-submission-v<version>.json` to the [KiCad metadata repository](https://gitlab.com/kicad/addons/metadata)
 
 ### About BOM
 
