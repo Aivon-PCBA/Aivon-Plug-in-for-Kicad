@@ -3,8 +3,9 @@
     "name": "AIVON Plug-in for KiCad",
     "description": "Start prototype and assembly by sending files to AIVON with just one click.",
     "description_full": "Click this plugin for high quality prototyping and assembly services, AIVON will commit to meeting your needs to the greatest extent.\n\nWhen you click AIVON Plug-in button, we will export these files in your project:\n\n1. Gerber files in correct format for production\n2. IPC-Netlist file\n3. Bom-file that includes all information of components (please note designator, quantity, MPN/part number, package/footprint are necessary)\n4. Pick and Place-file used in assembly\n\nYou can click \"Save to Cart\" to place an order immediately after uploading the files ( usually only takes a few seconds), our engineers will double check the files before the production.\n\nAbout AIVON:\n\nAIVON is a one-stop PCB prototyping and assembly platform. Standard PCB build time is 24 hours. We provide high quality PCBs and professional engineering review for every order.",
-    "identifier": "com.github.aivon.Aivon-Plug-in-for-Kicad",
+    "identifier": "com.github.aivon-pcba.Aivon-Plug-in-for-Kicad",
     "type": "plugin",
+    "category": "fab",
     "author": {
         "name": "AIVON.COM",
         "contact": {
@@ -19,7 +20,7 @@
     },
     "license": "MIT",
     "resources": {
-        "homepage": "https://github.com/Aivon-PCBA/Aivon-Plug-in-for-Kicad.git"
+        "homepage": "https://github.com/Aivon-PCBA/Aivon-Plug-in-for-Kicad"
     },
     "versions": [
         {

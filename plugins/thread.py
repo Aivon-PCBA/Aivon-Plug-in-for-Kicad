@@ -2,15 +2,55 @@
 
 import json
 import os
+import uuid
 import webbrowser
 import shutil
-import requests
 import wx
 import tempfile
 from threading import Thread
+from urllib import error, request
+
 from .result_event import *
 from .config import *
 from .process import *
+
+
+def _post_multipart(url, fields, file_field, file_path):
+    boundary = '----KiCadAivonBoundary' + uuid.uuid4().hex
+    body = bytearray()
+
+    for name, value in fields.items():
+        body.extend(
+            '--{}\r\n'
+            'Content-Disposition: form-data; name="{}"\r\n'
+            '\r\n'
+            '{}\r\n'.format(boundary, name, value).encode('utf-8'))
+
+    filename = os.path.basename(file_path)
+    body.extend(
+        '--{}\r\n'
+        'Content-Disposition: form-data; name="{}"; filename="{}"\r\n'
+        'Content-Type: application/zip\r\n'
+        '\r\n'.format(boundary, file_field, filename).encode('utf-8'))
+
+    with open(file_path, 'rb') as upload_file:
+        body.extend(upload_file.read())
+
+    body.extend('\r\n--{}--\r\n'.format(boundary).encode('utf-8'))
+
+    req = request.Request(
+        url,
+        data=bytes(body),
+        headers={
+            'Content-Type': 'multipart/form-data; boundary={}'.format(boundary),
+        },
+        method='POST')
+
+    try:
+        with request.urlopen(req) as rsp:
+            return rsp.status, rsp.read().decode('utf-8')
+    except error.HTTPError as http_error:
+        return http_error.code, http_error.read().decode('utf-8', errors='replace')
 
 
 class AivonThread(Thread):
@@ -24,6 +64,7 @@ class AivonThread(Thread):
 
         temp_dir = tempfile.mkdtemp()
         zip_path = None
+        urls = None
 
         try:
             self.report(5)
@@ -54,32 +95,34 @@ class AivonThread(Thread):
 
             self.report(65)
 
-            with open(zip_path, 'rb') as upload_file:
-                rsp = requests.post(
-                    upload_url, files={'upload[file]': upload_file}, data={
-                        'boardWidth': gerberData['boardWidth'],
-                        'boardHeight': gerberData['boardHeight'],
-                        'boardLayer': gerberData['boardLayer']
-                    })
+            status_code, response_text = _post_multipart(
+                upload_url,
+                {
+                    'boardWidth': gerberData['boardWidth'],
+                    'boardHeight': gerberData['boardHeight'],
+                    'boardLayer': gerberData['boardLayer'],
+                },
+                'upload[file]',
+                zip_path)
 
             self.report(75)
 
-            if not rsp.ok:
+            if status_code < 200 or status_code >= 300:
                 raise Exception(
                     'Upload API returned HTTP {} from {}. '
                     'Check baseUrl in config.py.'.format(
-                        rsp.status_code, upload_url))
+                        status_code, upload_url))
 
             try:
-                urls = rsp.json()
+                urls = json.loads(response_text)
             except ValueError:
-                preview = rsp.text.strip()[:200]
+                preview = response_text.strip()[:200]
                 raise Exception(
                     'Upload API did not return JSON from {}. '
                     'Response preview: {}'.format(upload_url, preview))
 
             if 'redirect' not in urls:
-                raise Exception(urls.get('error', rsp.text))
+                raise Exception(urls.get('error', response_text))
 
             readsofar = 0
             totalsize = os.path.getsize(zip_path)

@@ -6,7 +6,7 @@ from .thread import *
 from .result_event import *
 from .process import *
 
-class KiCadToAivonForm(wx.Frame):
+class KiCadToAivonForm(wx.Dialog):
     def __init__(self):
         wx.Dialog.__init__(
             self,
