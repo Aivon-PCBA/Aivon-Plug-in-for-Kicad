@@ -26,7 +26,6 @@ Then open the "Plugin and Content Manager" from the KiCad main window and instal
 
 ### Release
 
-
 1. Update `metadata.json` version
 2. Commit and push
 3. Create and push a tag, for example `v1.0.0`
