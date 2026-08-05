@@ -48,7 +48,7 @@ class AivonPlugin(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = "AIVON Plug-in for KiCad"
         self.category = "Manufacturing"
-        self.description = "Start prototype and assembly by sending files to AIVON with just one click."
+        self.description = "Export manufacturing files and send your PCB project to AIVON for fast online quotation."
         self.show_toolbar_button = True
         plugin_dir = os.path.dirname(os.path.abspath(__file__))
         self.icon_file_name = os.path.join(plugin_dir, 'icon.png')
